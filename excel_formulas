@@ -1,0 +1,3 @@
+# input data using a comparator function to using vlookups
+=IFERROR(INDEX(FILTER(Sheet8!B2:B, ISNUMBER(SEARCH(B2, Sheet8!C:C))), 1), "N/A")
+
