@@ -11,6 +11,6 @@ wget https://repo1.maven.org/maven2/com/google/cloud/spark/spark-bigquery-with-d
 #spark-submit command 
 spark-submit --jars spark-bigquery-with-dependencies_2.12-0.29.0.jar your_script.py
 
-# prerequisites to run airflow code 
+#prerequisites to run airflow code 
 pip install apache-airflow[gcp]
 pip install requests
