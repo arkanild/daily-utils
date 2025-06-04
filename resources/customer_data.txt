@@ -1,0 +1,8 @@
+user_id,purchase_amount
+A,300
+B,500
+A,250
+C,200
+A,500
+A,200
+B,600

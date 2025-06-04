@@ -86,13 +86,11 @@ def _create_ingest_and_transform_folders(spark)->Tuple[str,str]:
     ingest_dataframe.write.parquet(ingest_folder,mode='overwrite')
     return ingest_folder, transform_folder
 
-@pytest.skip.tests
 def test_should_maintain_all_data_it_reads(spark)-> None:
     given_ingest_folder , given_transform_folder = _create_ingest_and_transform_folders(spark)
 
-
-    given_dataframe = spark.read.parquet(given_transform_folder)
     transforms_calculate_distance(spark, given_ingest_folder, given_transform_folder)
+    given_dataframe = spark.read.parquet(given_transform_folder)
 
     actual_dataframe = spark.read.parquet(given_transform_folder)
     actual_columns = set(actual_dataframe.columns)
@@ -103,14 +101,13 @@ def test_should_maintain_all_data_it_reads(spark)-> None:
     assert expected_columns == actual_columns
     assert expected_schema.issubset(actual_schema)
     
-@pytest.skip.tests
 def test_should_add_distance_column_with_calculated_distance(spark)->None:
     given_ingest_folder, given_transform_folder = _create_ingest_and_transform_folders(spark)
     
     transforms_calculate_distance(spark, given_ingest_folder, given_transform_folder)
 
     actual_dataframe = spark.read.parquet(given_transform_folder)
-    expected_dataframe = spark.createDataframe(
+    expected_dataframe = spark.createDataFrame(
                 [
             SAMPLE_DATA[0] + [1.07],
             SAMPLE_DATA[1] + [0.92],
@@ -124,5 +121,28 @@ def test_should_add_distance_column_with_calculated_distance(spark)->None:
     assert expected_distance_schema == actual_distance_schema
     assert expected_dataframe.collect() == actual_dataframe.collect()
 
+@pytest.skip.test
+def test_should_filter_bikes_with_filter(spark):
+    from src.transforms_calculate_distance import filtered_distances
 
+    #input data with bike_id 
+    input_data = [
+        [27084, 2.00],
+        [13054, 2.20],
+        [34567, 4.00]
+    ]
+    #reading data if input_data is available
+    expected_df = spark.createDataFrame(input_data,["bike_id","Distance"], header=True, inferSchema=True)
     
+    #creating the temp folders for the actual program to write data into
+    given_transform_folder, output_path = _create_ingest_and_transform_folders(spark)
+
+    filtered_distances(spark,given_transform_folder, output_path)
+    
+    #reading data from a folder created by the prgram
+    actual_df = spark.read.parquet(output_path)
+  
+    #prorgram returns a dataframe and does not write in a file
+    #actual_df = filtered_distances(spark, given_transform_folder)
+
+    assert actual_df.collect() == expected_df.collect()
