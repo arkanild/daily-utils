@@ -580,7 +580,7 @@ def test_should_filter_stop_words_from_being_counted(spark):
     assert actual.collect() == expected_df.collect()
 
 #test case function to find out the most frequent customers
-@pyspark.skip.test
+@pytest.skip.test
 def test_should_only_return_the_most_frequent_customers(spark):
     from src.filter_numbers import filter_frequent_customer
     from pyspark.sql import functions as F
